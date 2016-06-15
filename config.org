@@ -137,7 +137,8 @@
   Need to new paths to exec so Emacs can find binaries
   #+BEGIN_SRC emacs-lisp
     (mapcar #'(lambda (x)
-                (add-to-list 'exec-path x))
+                (if (file-exists-p x)
+                    (add-to-list 'exec-path x)))
             '("/Library/TeX/texbin"
               "/usr/local/bin"
               "/usr/local/sbin"
@@ -148,8 +149,9 @@
   Do same thing as exec path
   #+BEGIN_SRC emacs-lisp
     (mapc #'(lambda (x)
-              (setenv "PATH"
-                      (concat x ":" (getenv "PATH"))))
+              (if (file-exists-p x)
+                  (setenv "PATH"
+                          (concat x ":" (getenv "PATH")))))
           '("/Library/TeX/texbin"
             "/usr/local/bin"
             "/usr/local/sbin"
