@@ -13,7 +13,7 @@
 
 ** Programatic way to make sure packages are installed
    #+BEGIN_SRC emacs-lisp
-     (defvar leh-local-packages '(ag go-mode helm magit markdown-mode))
+     (defvar leh-local-packages '(ag go-eldoc go-mode helm magit markdown-mode))
 
      (defun uninstalled-packages (packages)
        (delq nil
@@ -51,7 +51,7 @@
 
 ** Show matching parens
    #+BEGIN_SRC emacs-lisp
-     (setq show-paren-mode 't)
+     (show-paren-mode 1)
    #+END_SRC
 ** Fix Yes or no p
   #+BEGIN_SRC emacs-lisp
@@ -143,6 +143,7 @@
               "/usr/local/bin"
               "/usr/local/sbin"
               "/usr/local/opt/go/libexec/bin"
+              "~/src/gopath/bin"
               "~/bin"))
   #+END_SRC
 * PATH variable
@@ -156,6 +157,7 @@
             "/usr/local/bin"
             "/usr/local/sbin"
             "/usr/local/opt/go/libexec/bin"
+            "~/src/gopath/bin"
             "~/bin"))
   #+END_SRC
 
@@ -163,6 +165,10 @@
   Set GOPATH
   #+BEGIN_SRC emacs-lisp
     (setenv "GOPATH"  (expand-file-name "gopath" "~/src"))
+    (defun go-mode-setup ()
+      (go-eldoc-setup)
+      (add-hook 'before-save-hook 'gofmt-before-save))
+    (add-hook 'go-mode-hook 'go-mode-setup)
   #+END_SRC
 
 * Auth Sources
