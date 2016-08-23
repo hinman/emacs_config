@@ -13,7 +13,7 @@
 
 ** Programatic way to make sure packages are installed
    #+BEGIN_SRC emacs-lisp
-     (defvar leh-local-packages '(ag go-eldoc go-mode helm magit markdown-mode))
+     (defvar leh-local-packages '(ag auto-complete go-eldoc go-autocomplete go-mode magit markdown-mode))
 
      (defun uninstalled-packages (packages)
        (delq nil
@@ -125,13 +125,14 @@
     (setq markdown-command "pandoc --from markdown_github -t html --highlight-style pygments --standalone")
   #+END_SRC
 * Helm
-  #+BEGIN_SRC emacs-lisp
+  Decided I don't like Helm
+  #+BEGIN_EXAMPLE emacs-lisp
     (require 'helm-config)
     (helm-mode 1)
     (define-key global-map [remap find-file] 'helm-find-files)
     (define-key global-map [remap occur] 'helm-occur)
     (define-key global-map [remap list-buffers] 'helm-buffers-list)
-  #+END_SRC
+  #+END_EXAMPLE
 
 * Exec Path
   Need to new paths to exec so Emacs can find binaries
@@ -165,10 +166,12 @@
   Set GOPATH
   #+BEGIN_SRC emacs-lisp
     (setenv "GOPATH"  (expand-file-name "gopath" "~/src"))
-    (defun go-mode-setup ()
-      (go-eldoc-setup)
-      (add-hook 'before-save-hook 'gofmt-before-save))
-    (add-hook 'go-mode-hook 'go-mode-setup)
+    (require 'go-autocomplete)
+    (require 'auto-complete-config)
+    (ac-config-default)
+    (add-hook 'before-save-hook 'gofmt-before-save)
+    (add-hook 'go-mode-hook 'go-eldoc-setup)
+
   #+END_SRC
 
 * Auth Sources
