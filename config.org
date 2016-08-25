@@ -13,7 +13,7 @@
 
 ** Programatic way to make sure packages are installed
    #+BEGIN_SRC emacs-lisp
-     (defvar leh-local-packages '(ag auto-complete go-eldoc go-autocomplete go-mode magit markdown-mode))
+     (defvar leh-local-packages '(ag auto-complete flycheck go-autocomplete go-eldoc go-mode magit markdown-mode))
 
      (defun uninstalled-packages (packages)
        (delq nil
@@ -182,4 +182,14 @@
             "~/.authinfo.gpg"
             "~/.netrc"
             macos-keychain-internet)))
+  #+END_SRC
+* IDO
+  #+BEGIN_SRC emacs-lisp
+    (ido-mode 1)
+    (setq ido-everywhere t)
+    (setq ido-enable-flex-matching t)
+  #+END_SRC
+* Flycheck
+  #+BEGIN_SRC emacs-lisp
+    (add-hook 'after-init-hook #'global-flycheck-mode)
   #+END_SRC
