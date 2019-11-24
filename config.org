@@ -1,195 +1,133 @@
-* Packages
-  Melpa works well for packages.  This will also initalize the
-  packages that are installed so we can config them here too.
-
-** Add Melpa
-
-   #+BEGIN_SRC emacs-lisp
-     (require 'package)
-     (package-initialize)
-     (add-to-list 'package-archives
-                  '("melpa" . "https://melpa.org/packages/") t)
-   #+END_SRC
-
-** Programatic way to make sure packages are installed
-   #+BEGIN_SRC emacs-lisp
-     (defvar leh-local-packages '(ag auto-complete flycheck go-autocomplete go-eldoc go-mode magit markdown-mode))
-
-     (defun uninstalled-packages (packages)
-       (delq nil
-             (mapcar (lambda (p)
-                       (if (package-installed-p p nil) nil p))
-                     packages)))
-
-     (let ((need-to-install
-            (uninstalled-packages leh-local-packages)))
-       (when need-to-install
-         (progn
-           (package-refresh-contents)
-           (dolist (p need-to-install)
-             (package-install p)))))
-   #+END_SRC
-* User Information
-** Set Full Name
-   #+BEGIN_SRC emacs-lisp
-   (setq user-full-name "Lee Hinman")
-   #+END_SRC
-** Set e-mail address
-   #+BEGIN_SRC emacs-lisp
-   (setq user-mail-address "hinman@gmail.com")
-   #+END_SRC
-
-* Display tweaks
-** Turn on column number mode
-   #+BEGIN_SRC emacs-lisp
-     (setq column-number-mode 't)
-   #+END_SRC
-** Turn off tool bar
-   #+BEGIN_SRC emacs-lisp
-   (tool-bar-mode -1)
-   #+END_SRC
-
-** Show matching parens
-   #+BEGIN_SRC emacs-lisp
-     (show-paren-mode 1)
-   #+END_SRC
-** Fix Yes or no p
+* Add Melpa
   #+BEGIN_SRC emacs-lisp
-    (defalias 'yes-or-no-p 'y-or-n-p)  
+    (require 'package)
+    (package-initialize)
+    (add-to-list 'package-archives
+		 '("melpa" . "https://melpa.org/packages/") t)
+  #+END_SRC
+* Use-Package
+  #+BEGIN_SRC emacs-lisp
+    (unless (package-installed-p 'use-package)
+      (package-refresh-contents)
+      (package-install 'use-package))
+  #+END_SRC
+* Full Name
+  #+BEGIN_SRC emacs-lisp
+    (setq user-full-name "Lee Hinman")
+  #+END_SRC
+* E-mail
+  #+BEGIN_SRC emacs-lisp
+    (setq user-mail-address "hinman@gmail.com")
+  #+END_SRC
+* Disable tool bar
+  #+BEGIN_SRC emacs-lisp
+    (tool-bar-mode -1)
+  #+END_SRC
+* Turn on column number mode
+  #+BEGIN_SRC emacs-lisp
+    (setq column-number-mode 't)
+  #+END_SRC
+* Show matching parens
+  #+BEGIN_SRC emacs-lisp
+  (show-paren-mode 1)
+  #+END_SRC
+* Fix yes-or-no-p
+  #+BEGIN_SRC emacs-lisp
+  (defalias 'yes-or-no-p 'y-or-n-p)
   #+END_SRC
 * Backup Files
-  Save All backup files to one directory
   #+BEGIN_SRC emacs-lisp
-    (setq backup-directory-alist `((".*" . "~/.emacs.d/backups")))
+  (setq backup-directory-alist `((".*" . "~/.emacs.d/backups")))
   #+END_SRC
-
 * Auto-Fill Mode
-  I like auto-fill mode for all text-modes
   #+BEGIN_SRC emacs-lisp
-    (add-hook 'text-mode-hook 'turn-on-auto-fill)  
+  (add-hook 'text-mode-hook 'turn-on-auto-fill)
   #+END_SRC
-* Org Settings
-** Enable other exporter backends
-   #+BEGIN_SRC emacs-lisp
-     (mapc #'(lambda (x)
-              (add-to-list 'org-export-backends x))
-           '(beamer md odt))
-   #+END_SRC
-** Enable languages for babel
-   #+BEGIN_SRC emacs-lisp
-     (org-babel-do-load-languages
-      'org-babel-load-languages
-      '((ditaa . t)
-        (emacs-lisp . t)
-        (mscgen . t)
-        (perl . t)
-        (plantuml . t)
-        (python . t)
-        (ruby . t)
-        (sh . t)))
-     (setq org-plantuml-jar-path "/usr/local/Cellar/plantuml/8041/plantuml.8041.jar")
-   #+END_SRC
-** Hitec latex package
-#+BEGIN_SRC emacs-lisp
-  (require 'ox-latex)
-  (add-to-list 'org-latex-classes
-               '("hitec"
-               "\\documentclass{hitec}
-                 \\usepackage{graphicx}
-                 \\usepackage{graphicx}
-                 \\usepackage{hyperref}
-                 \\usepackage{parskip}
-                 \\usepackage{pstricks}
-                 \\usepackage{textcomp}
-                 \\usepackage[tikz]{bclogo}
-                 \\usepackage{listings}
-                 \\usepackage{fancyvrb}
-                 \\presetkeys{bclogo}{ombre=true,epBord=3,couleur = blue!15!white,couleurBord = red,arrondi = 0.2,logo=\bctrombone}{}
-                 \\usetikzlibrary{patterns}
-                 \\company{Target Corporation}
-                 [NO-DEFAULT-PACKAGES]
-                 [NO-PACKAGES]"
-                 ("\\section{%s}" . "\\section*{%s}")
-                 ("\\subsection{%s}" . "\\subsection*{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-#+END_SRC
-* Markdown settings
-  Use GitHub flavored Markdown and turn off auto-fill which causes problems with
-  long lines.  Also use pandoc to render to HTML.
-  #+BEGIN_SRC emacs-lisp
-    (require 'markdown-mode)
-    (add-hook 'markdown-mode-hook 'turn-off-auto-fill)
-    (add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode))
-    (setq markdown-command "pandoc --from markdown_github -t html --highlight-style pygments --standalone")
-  #+END_SRC
-* Helm
-  Decided I don't like Helm
-  #+BEGIN_EXAMPLE emacs-lisp
-    (require 'helm-config)
-    (helm-mode 1)
-    (define-key global-map [remap find-file] 'helm-find-files)
-    (define-key global-map [remap occur] 'helm-occur)
-    (define-key global-map [remap list-buffers] 'helm-buffers-list)
-  #+END_EXAMPLE
-
 * Exec Path
-  Need to new paths to exec so Emacs can find binaries
   #+BEGIN_SRC emacs-lisp
     (mapcar #'(lambda (x)
-                (if (file-exists-p x)
-                    (add-to-list 'exec-path x)))
-            '("/Library/TeX/texbin"
-              "/usr/local/bin"
-              "/usr/local/sbin"
-              "/usr/local/opt/go/libexec/bin"
-              "~/src/gopath/bin"
-              "~/bin"))
+		(if (file-exists-p x)
+		    (add-to-list 'exec-path x)))
+	    '("/usr/local/go/bin"
+	      "~/go/bin"))
   #+END_SRC
-* PATH variable
-  Do same thing as exec path
+* Path Variable
   #+BEGIN_SRC emacs-lisp
     (mapc #'(lambda (x)
-              (if (file-exists-p x)
-                  (setenv "PATH"
-                          (concat x ":" (getenv "PATH")))))
-          '("/Library/TeX/texbin"
-            "/usr/local/bin"
-            "/usr/local/sbin"
-            "/usr/local/opt/go/libexec/bin"
-            "~/src/gopath/bin"
-            "~/bin"))
+	      (if (file-exists-p x)
+		  (setenv "PATH"
+			  (concat x ":" (getenv "PATH")))))
+	  '( "/usr/local/go/bin"
+	    "~/go/bin"))
   #+END_SRC
-
-* Go Mode
-  Set GOPATH
+* Org Mode
   #+BEGIN_SRC emacs-lisp
-    (setenv "GOPATH"  (expand-file-name "gopath" "~/src"))
-    (require 'go-autocomplete)
-    (require 'auto-complete-config)
-    (ac-config-default)
-    (add-hook 'before-save-hook 'gofmt-before-save)
-    (add-hook 'go-mode-hook 'go-eldoc-setup)
-
+    (global-set-key "\C-cl" 'org-store-link)
   #+END_SRC
-
-* Auth Sources
+* IDO Mode
   #+BEGIN_SRC emacs-lisp
-    (setq auth-sources
-          (quote
-           ("~/.authinfo"
-            "~/.authinfo.gpg"
-            "~/.netrc"
-            macos-keychain-internet)))
-  #+END_SRC
-* IDO
-  #+BEGIN_SRC emacs-lisp
-    (ido-mode 1)
-    (setq ido-everywhere t)
     (setq ido-enable-flex-matching t)
+    (setq ido-everywhere t)
+    (ido-mode 1)
+  #+END_SRC
+* Projectile
+  #+BEGIN_SRC emacs-lisp
+    (use-package projectile
+      :ensure t
+      :config
+      (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+      (projectile-mode +1))
+  #+END_SRC
+* Magit
+  #+BEGIN_SRC emacs-lisp
+    (use-package magit
+      :ensure t
+      :init
+      (progn
+	(bind-key "C-x g" 'magit-status)))
+  #+END_SRC
+* Git Gutter
+  #+BEGIN_SRC emacs-lisp
+    (use-package git-gutter
+      :ensure t
+      :init
+      (global-git-gutter-mode +1))
   #+END_SRC
 * Flycheck
   #+BEGIN_SRC emacs-lisp
-    (add-hook 'after-init-hook #'global-flycheck-mode)
+    (use-package flycheck
+      :ensure t
+      :init
+      (global-flycheck-mode t))
+  #+END_SRC
+* Ripgrep
+  #+BEGIN_SRC emacs-lisp
+    (use-package rg
+      :ensure t
+      :commands rg)
+  #+END_SRC
+* Go-mode
+  #+BEGIN_SRC emacs-lisp
+    (use-package go-mode
+      :ensure t
+      :config
+      (add-hook 'before-save-hook 'gofmt-before-save))
+
+  #+END_SRC
+* YAML mode
+  #+BEGIN_SRC emacs-lisp
+    (use-package yaml-mode
+      :ensure t)
+  #+END_SRC
+* JSON mode
+  #+BEGIN_SRC emacs-lisp
+    (use-package json-mode
+      :ensure t)
+  #+END_SRC
+* Javascript
+  #+BEGIN_SRC emacs-lisp
+    (defun my-js-mode-hook ()
+      "Custom js-mode behavior"
+      (setq indent-tabs-mode nil))
+    (add-hook 'js-mode-hook 'my-js-mode-hook)
   #+END_SRC
