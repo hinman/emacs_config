@@ -60,9 +60,22 @@
 	  '( "/usr/local/go/bin"
 	    "~/go/bin"))
   #+END_SRC
+* Company Mode
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    :ensure t
+    :config
+    (setq company-idle-delay 1)
+    (setq company-minimum-prefix-lenght 3)
+    (setq company-dabbrev-downcase nil)
+    (add-hook 'after-init-hook 'global-company-mode))
+#+END_SRC
 * Org Mode
   #+BEGIN_SRC emacs-lisp
     (global-set-key "\C-cl" 'org-store-link)
+    (use-package org-bullets
+		  :ensure t
+		  :hook (org-mode . org-bullets-mode))
   #+END_SRC
 * IDO Mode
   #+BEGIN_SRC emacs-lisp
@@ -78,27 +91,30 @@
       (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
       (projectile-mode +1))
   #+END_SRC
-* Magit
+* Magit & Forge
   #+BEGIN_SRC emacs-lisp
     (use-package magit
       :ensure t
       :init
       (progn
 	(bind-key "C-x g" 'magit-status)))
+    (use-package forge
+      :ensure t
+      :after magit)
   #+END_SRC
-* Git Gutter
+* Diff-Hl
   #+BEGIN_SRC emacs-lisp
-    (use-package git-gutter
+    (use-package diff-hl
       :ensure t
       :init
-      (global-git-gutter-mode +1))
+      (global-diff-hl-mode))
   #+END_SRC
 * Flycheck
   #+BEGIN_SRC emacs-lisp
     (use-package flycheck
       :ensure t
       :init
-      (global-flycheck-mode t))
+      (global-flycheck-mode))
   #+END_SRC
 * Ripgrep
   #+BEGIN_SRC emacs-lisp
@@ -111,6 +127,7 @@
     (use-package go-mode
       :ensure t
       :config
+      (setq gofmt-command "goimports")
       (add-hook 'before-save-hook 'gofmt-before-save))
 
   #+END_SRC
@@ -130,4 +147,28 @@
       "Custom js-mode behavior"
       (setq indent-tabs-mode nil))
     (add-hook 'js-mode-hook 'my-js-mode-hook)
+  #+END_SRC
+* Flyspell
+  #+BEGIN_SRC emacs-lisp
+    (dolist (hook '(text-mode-hook))
+      (add-hook hook (lambda () (flyspell-mode 1))))
+  #+END_SRC
+* Trailing Whitespace
+  #+BEGIN_SRC emacs-lisp
+    (setq show-trailing-whitespace t)
+  #+END_SRC
+* Sanityinc Tommorrow Theme
+  #+BEGIN_SRC emacs-lisp
+    (use-package color-theme-sanityinc-tomorrow
+      :ensure t
+      :config
+      (load-theme 'sanityinc-tomorrow-night t))
+  #+END_SRC
+* SDCV Mode (Websters 1913 dictionary)
+  - download from https://s3.amazonaws.com/jsomers/dictionary.zip
+  - insall sdcv from brew or apt
+  - put files in =~/.stardict/dic/=
+  #+BEGIN_SRC emacs-lisp
+    (use-package sdcv
+      :ensure t)
   #+END_SRC
