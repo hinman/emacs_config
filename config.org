@@ -123,6 +123,18 @@
       :commands rg)
   #+END_SRC
 * Go-mode
+  - install goimports
+    #+BEGIN_SRC shell
+      go get golang.org/x/tools/cmd/goimports
+    #+END_SRC
+  - install godef
+    #+BEGIN_SRC shell
+      go get -v github.com/rogpeppe/godef
+    #+END_SRC
+  - install guru
+    #+BEGIN_SRC shell
+      go get -v golang.org/x/tools/cmd/guru
+    #+END_SRC
   #+BEGIN_SRC emacs-lisp
     (use-package go-mode
       :ensure t
@@ -171,4 +183,10 @@
   #+BEGIN_SRC emacs-lisp
     (use-package sdcv
       :ensure t)
+  #+END_SRC
+* Eglot
+  #+BEGIN_SRC emacs-lisp
+    (use-package eglot
+      :ensure t
+      :hook ((go-mode) . 'eglot-ensure))
   #+END_SRC
