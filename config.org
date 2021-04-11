@@ -71,10 +71,16 @@
 #+END_SRC
 * Org Mode
   #+BEGIN_SRC emacs-lisp
-    (global-set-key "\C-cl" 'org-store-link)
+    (global-set-key (kbd "C-c l") 'org-store-link)
+    (global-set-key (kbd "C-c c") 'org-capture)
     (use-package org-bullets
 		  :ensure t
 		  :hook (org-mode . org-bullets-mode))
+    (setq org-capture-templates
+	  '(("g" "Goals" entry (file+datetree "~/Dropbox/journal/journal.org.gpg")
+	     "* Goals\n  - [ ] %?")
+	    ("r" "Reflections" entry (file+datetree "~/Dropbox/journal/journal.org.gpg")
+	     "* Reflections\n  - %?" :time-prompt t)))
   #+END_SRC
 * IDO Mode
   #+BEGIN_SRC emacs-lisp
@@ -194,3 +200,10 @@
     (use-package vterm
 	:ensure t)
   #+END_SRC
+* Nov (epub)
+#+begin_src emacs-lisp
+    (use-package nov
+      :ensure t
+      :config
+      (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
+#+end_src
