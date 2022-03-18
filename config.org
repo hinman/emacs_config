@@ -48,6 +48,9 @@
 		(if (file-exists-p x)
 		    (add-to-list 'exec-path x)))
 	    '("/usr/local/go/bin"
+	      "/opt/homebrew/bin"
+	      "/opt/homebrew/sbin"
+	      "/usr/local/bin"
 	      "~/go/bin"))
   #+END_SRC
 * Path Variable
@@ -57,6 +60,9 @@
 		  (setenv "PATH"
 			  (concat x ":" (getenv "PATH")))))
 	  '( "/usr/local/go/bin"
+	      "/opt/homebrew/bin"
+	      "/opt/homebrew/sbin"
+	      "/usr/local/bin"
 	    "~/go/bin"))
   #+END_SRC
 * Company Mode
