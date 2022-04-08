@@ -18,6 +18,10 @@
   #+BEGIN_SRC emacs-lisp
     (setq user-mail-address "hinman@gmail.com")
   #+END_SRC
+* Set Default Font
+#+begin_src emacs-lisp
+  (set-face-attribute 'default nil :font "CaskaydiaCove Nerd Font" :height 140)
+#+end_src
 * Disable tool bar
   #+BEGIN_SRC emacs-lisp
     (tool-bar-mode -1)
@@ -38,6 +42,11 @@
   #+BEGIN_SRC emacs-lisp
   (setq backup-directory-alist `((".*" . "~/.emacs.d/backups")))
   #+END_SRC
+* Darwin set ls for dired
+#+begin_src emacs-lisp
+  (when (string= system-type "darwin")
+    (setq dired-use-ls-dired nil))
+#+end_src
 * Auto-Fill Mode
   #+BEGIN_SRC emacs-lisp
   (add-hook 'text-mode-hook 'turn-on-auto-fill)
@@ -51,6 +60,7 @@
 	      "/opt/homebrew/bin"
 	      "/opt/homebrew/sbin"
 	      "/usr/local/bin"
+	      "/Library/TeX/texbin"
 	      "~/go/bin"))
   #+END_SRC
 * Path Variable
@@ -63,6 +73,7 @@
 	      "/opt/homebrew/bin"
 	      "/opt/homebrew/sbin"
 	      "/usr/local/bin"
+	      "/Library/TeX/texbin"
 	    "~/go/bin"))
   #+END_SRC
 * Company Mode
@@ -70,10 +81,11 @@
   (use-package company
     :ensure t
     :config
-    (setq company-idle-delay 1)
-    (setq company-minimum-prefix-lenght 3)
+    (setq company-idle-delay 10)
+    (setq company-minimum-prefix-length 2)
     (setq company-dabbrev-downcase nil)
-    (add-hook 'after-init-hook 'global-company-mode))
+    (add-hook 'after-init-hook 'global-company-mode)
+    (global-set-key (kbd "M-/") #'company-complete))
 #+END_SRC
 * Org Mode
   #+BEGIN_SRC emacs-lisp
@@ -185,21 +197,17 @@
     (use-package color-theme-sanityinc-tomorrow
       :ensure t
       :config
-      (load-theme 'sanityinc-tomorrow-night t))
+      (load-theme 'sanityinc-tomorrow-day t))
   #+END_SRC
 * SDCV Mode (Websters 1913 dictionary)
   - download from https://s3.amazonaws.com/jsomers/dictionary.zip
+  - unzip dictionary.zip
+  - extract stardict-dictd-web1913-2.4.2.tar.bz2
+  - mv stardict-dictd-web1913-2.4.2 ~/.stardict/dic/
   - insall sdcv from brew or apt
-  - put files in =~/.stardict/dic/=
   #+BEGIN_SRC emacs-lisp
     (use-package sdcv
       :ensure t)
-  #+END_SRC
-* Eglot - Disabled
-  #+BEGIN_SRC emacs-lisp
-    ;; (use-package eglot
-    ;;   :ensure t
-    ;;   :hook ((go-mode) . 'eglot-ensure))
   #+END_SRC
 * Vterm
   #+BEGIN_SRC emacs-lisp
@@ -251,13 +259,31 @@
   #+end_src
 * Mu4e
 #+begin_src emacs-lisp
-  (require 'mu4e)
-  (setq
-   mu4e-maildir       "~/Maildir/home"   ;; top-level Maildir
-   mu4e-sent-folder   "/Sent Messages"       ;; folder for sent messages
-   mu4e-drafts-folder "/Drafts"     ;; unfinished messages
-   mu4e-trash-folder  "/Deleted Messages"      ;; trashed messages
-   mu4e-refile-folder "/Archive"  ;; archive messages
-   mu4e-get-mail-command "mbsync -a"   ;; or fetchmail, or ...
-   mu4e-update-interval 300)             ;; update every 5 minutes   ;; saved messages
+  (use-package mu4e
+    :load-path "/opt/homebrew/share/emacs/site-lisp/mu/mu4e"
+    :config
+    (setq mail-user-agent 'mu4e-user-agent)
+    (setq message-kill-buffer-on-exit t)
+    (setq mu4e-sent-messages-behavior 'delete)
+    (setq mu4e-sent-folder "/[Gmail].Sent Mail")
+    (setq mu4e-drafts-folder "/[Gmail].Drafts")
+    (setq mu4e-trash-folder "/[Gmail].Trash")
+    (setq mu4e-get-mail-command "mbsync -a"))
+#+end_src
+
+* pikchr-mode
+#+begin_src emacs-lisp
+    (use-package pikchr-mode
+      :ensure t)
+#+end_src
+* TreeSitter do last to add to loaded languages/modes
+#+begin_src emacs-lisp
+  (use-package tree-sitter
+    :ensure t
+    :config
+    (global-tree-sitter-mode)
+    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+  (use-package tree-sitter-langs
+    :ensure t)
+  
 #+end_src
