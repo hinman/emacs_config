@@ -20,7 +20,8 @@
   #+END_SRC
 * Set Default Font
 #+begin_src emacs-lisp
-  (set-face-attribute 'default nil :font "CaskaydiaCove Nerd Font" :height 140)
+  ;;(set-face-attribute 'default nil :font "CaskaydiaCove Nerd Font" :height 140)
+  (set-face-attribute 'default nil :font "ProggyVector" :height 140)
 #+end_src
 * Disable tool bar
   #+BEGIN_SRC emacs-lisp
@@ -99,6 +100,11 @@
 	     "* Goals\n  - [ ] %?")
 	    ("r" "Reflections" entry (file+datetree "~/Dropbox/journal/journal.org.gpg")
 	     "* Reflections\n  - %?" :time-prompt t)))
+    (org-babel-do-load-languages 'org-babel-load-languages
+				 '(
+				   (emacs-lisp . t)
+				   (shell . t)
+				   ))
   #+END_SRC
 * IDO Mode
   #+BEGIN_SRC emacs-lisp
@@ -187,6 +193,8 @@
   #+BEGIN_SRC emacs-lisp
     (dolist (hook '(text-mode-hook))
       (add-hook hook (lambda () (flyspell-mode 1))))
+    (require 'flyspell)
+    (add-hook 'prog-mode-hook 'flyspell-prog-mode)
   #+END_SRC
 * Trailing Whitespace
   #+BEGIN_SRC emacs-lisp
@@ -285,5 +293,9 @@
     (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
   (use-package tree-sitter-langs
     :ensure t)
-  
+  (mapcar #'(lambda (x)
+	      (add-to-list 'flyspell-prog-text-faces x))
+	  '(tree-sitter-hl-face:comment
+	    tree-sitter-hl-face:doc
+	    tree-sitter-hl-face:string))
 #+end_src
