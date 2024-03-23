@@ -10,6 +10,16 @@
       (package-refresh-contents)
       (package-install 'use-package))
   #+END_SRC
+* Treesit-auto
+#+begin_src emacs-lisp
+  (use-package treesit-auto
+    :ensure t
+    :custom
+    (treesit-auto-install 'prompt)
+    :config
+    (treesit-auto-add-to-auto-mode-alist 'all)
+    (global-treesit-auto-mode))
+#+end_src
 * Full Name
   #+BEGIN_SRC emacs-lisp
     (setq user-full-name "Lee Hinman")
@@ -21,7 +31,7 @@
 * Set Default Font
 #+begin_src emacs-lisp
   ;;(set-face-attribute 'default nil :font "CaskaydiaCove Nerd Font" :height 140)
-  (set-face-attribute 'default nil :font "ProggyVector" :height 140)
+  (set-face-attribute 'default nil :font "ProggyCrossed" :height 140)
 #+end_src
 * Disable tool bar
   #+BEGIN_SRC emacs-lisp
@@ -95,11 +105,6 @@
     (use-package org-bullets
 		  :ensure t
 		  :hook (org-mode . org-bullets-mode))
-    (setq org-capture-templates
-	  '(("g" "Goals" entry (file+datetree "~/Dropbox/journal/journal.org.gpg")
-	     "* Goals\n  - [ ] %?")
-	    ("r" "Reflections" entry (file+datetree "~/Dropbox/journal/journal.org.gpg")
-	     "* Reflections\n  - %?" :time-prompt t)))
     (org-babel-do-load-languages 'org-babel-load-languages
 				 '(
 				   (emacs-lisp . t)
@@ -151,44 +156,6 @@
       :ensure t
       :commands rg)
   #+END_SRC
-* Go-mode
-  - install goimports
-    #+BEGIN_SRC shell
-      go get golang.org/x/tools/cmd/goimports
-    #+END_SRC
-  - install godef
-    #+BEGIN_SRC shell
-      go get -v github.com/rogpeppe/godef
-    #+END_SRC
-  - install guru
-    #+BEGIN_SRC shell
-      go get -v golang.org/x/tools/cmd/guru
-    #+END_SRC
-  #+BEGIN_SRC emacs-lisp
-    (use-package go-mode
-      :ensure t
-      :config
-      (setq gofmt-command "goimports")
-      (add-hook 'before-save-hook 'gofmt-before-save))
-    (setenv "G111MODULE" "on")
-  #+END_SRC
-* YAML mode
-  #+BEGIN_SRC emacs-lisp
-    (use-package yaml-mode
-      :ensure t)
-  #+END_SRC
-* JSON mode
-  #+BEGIN_SRC emacs-lisp
-    (use-package json-mode
-      :ensure t)
-  #+END_SRC
-* Javascript
-  #+BEGIN_SRC emacs-lisp
-    (defun my-js-mode-hook ()
-      "Custom js-mode behavior"
-      (setq indent-tabs-mode nil))
-    (add-hook 'js-mode-hook 'my-js-mode-hook)
-  #+END_SRC
 * Flyspell
   #+BEGIN_SRC emacs-lisp
     (dolist (hook '(text-mode-hook))
@@ -229,73 +196,54 @@
       :config
       (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
 #+end_src
-* LSP
-  #+begin_src emacs-lisp
-    (use-package lsp-mode
-      :init
-      ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-      (setq lsp-keymap-prefix "C-c l")
-      :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-	     (go-mode . lsp-deferred)
-	     (yaml-mode . lsp-deferred)
-	     ;; if you want which-key integration
-	     ;; (lsp-mode . lsp-enable-which-key-integration))
-	     )
-      :commands lsp lsp-deferred)
-
-    ;; optionally
-    (use-package lsp-ui :commands lsp-ui-mode)
-    ;; if you are helm user
-    ;; (use-package helm-lsp :commands helm-lsp-workspace-symbol)
-    ;; if you are ivy user
-    ;; (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-    ;; (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
-
-    ;; optionally if you want to use debugger
-    ;; (use-package dap-mode)
-    ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
-
-    ;; optional if you want which-key integration
-    ;;(use-package which-key
-    ;;    :config
-    ;;    (which-key-mode))
-  #+end_src
 * Ledger
   #+begin_src emacs-lisp
     (use-package ledger-mode
       :ensure t)
   #+end_src
-* Mu4e
+* Eglot
 #+begin_src emacs-lisp
-  (use-package mu4e
-    :load-path "/opt/homebrew/share/emacs/site-lisp/mu/mu4e"
-    :config
-    (setq mail-user-agent 'mu4e-user-agent)
-    (setq message-kill-buffer-on-exit t)
-    (setq mu4e-sent-messages-behavior 'delete)
-    (setq mu4e-sent-folder "/[Gmail].Sent Mail")
-    (setq mu4e-drafts-folder "/[Gmail].Drafts")
-    (setq mu4e-trash-folder "/[Gmail].Trash")
-    (setq mu4e-get-mail-command "mbsync -a"))
+  (use-package eglot
+    :ensure t)
 #+end_src
-
-* pikchr-mode
+* go-ts-mode
 #+begin_src emacs-lisp
-    (use-package pikchr-mode
-      :ensure t)
+  (defun my-eglot-organize-imports () (interactive)
+	 (eglot-code-actions nil nil "source.organizeImports" t))
+  (add-hook 'go-ts-mode-hook
+	    (lambda () (add-hook 'before-save-hook 'my-eglot-organize-imports nil 'local)))
+  (add-hook 'go-ts-mode-hook
+	    (lambda () (add-hook 'before-save-hook 'eglot-format-buffer)))
+  (add-hook 'go-ts-mode-hook 'eglot-ensure)
 #+end_src
-* TreeSitter do last to add to loaded languages/modes
+* Blog
 #+begin_src emacs-lisp
-  (use-package tree-sitter
+  (use-package org-static-blog
     :ensure t
     :config
-    (global-tree-sitter-mode)
-    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
-  (use-package tree-sitter-langs
-    :ensure t)
-  (mapcar #'(lambda (x)
-	      (add-to-list 'flyspell-prog-text-faces x))
-	  '(tree-sitter-hl-face:comment
-	    tree-sitter-hl-face:doc
-	    tree-sitter-hl-face:string))
+    (setq org-static-blog-publish-title "Lee E. Hinman's Blog")
+    (setq org-static-blog-publish-url "https://hinman.github.io/")
+    (setq org-static-blog-publish-directory "~/src/hinman.github.io/")
+    (setq org-static-blog-posts-directory "~/src/hinman.github.io/blog/posts/")
+    (setq org-static-blog-drafts-directory "~/src/hinman.github.io/drafts/")
+    (setq org-static-blog-enable-tags t)
+    (setq org-export-with-toc nil)
+    (setq org-export-with-section-numbers nil)
+    (setq org-static-blog-page-header
+	"<meta name=\"author\" content=\"Lee E. Hinman\">
+  <meta name=\"referrer\" content=\"no-referrer\">
+  <meta name=\"viewport\" content=\"initial-scale=1,width=device-width,minimum-scale=1\">
+  <link href= \"static/style.css\" rel=\"stylesheet\" type=\"text/css\" />
+  <link rel=\"icon\" href=\"static/favicon.ico\">")
+    (setq org-static-blog-page-preamble
+	"<div class=\"header\">
+    <a href=\"https://hinman.github.io\">Lee E. Hinman's Blog</a>
+  </div>")
+    (setq org-static-blog-page-postamble
+	"<div id=\"archive\">
+    <a href=\"https://hinman.github.io/archive.html\">Other posts</a>
+  </div>
+  <center><a rel=\"license\" href=\"https://creativecommons.org/licenses/by-sa/3.0/\"><img alt=\"Creative Commons License\" style=\"border-width:0\" src=\"https://i.creativecommons.org/l/by-sa/3.0/88x31.png\" /></a><br /><span xmlns:dct=\"https://purl.org/dc/terms/\" href=\"https://purl.org/dc/dcmitype/Text\" property=\"dct:title\" rel=\"dct:type\">hinman.github.io</span> by <a xmlns:cc=\"https://creativecommons.org/ns#\" href=\"https://hinman.github.io\" property=\"cc:attributionName\" rel=\"cc:attributionURL\">Lee E. Hinman</a> is licensed under a <a rel=\"license\" href=\"https://creativecommons.org/licenses/by-sa/3.0/\">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.</center>")
+    (setq org-static-blog-index-front-matter
+	"<h1>Welcome</h1>\n"))
 #+end_src
